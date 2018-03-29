@@ -1,0 +1,8 @@
+Python Program to read INA3221 for Raspberry Pi
+
+Was using a readily available INA3221 for testing, but had put on custom shunt resistors and needed to record the data.
+
+Modified source to accept a custom resistor value for each channel and saves the data to a CSV file.
+
+Original Source from Switchdoclabs
+https://github.com/switchdoclabs/SDL_Pi_INA3221
