@@ -6,10 +6,13 @@
 #
 
 # imports
+import sys
 import csv
 import time
 import SDL_Pi_INA3221
 
+TEST_MODE = False
+STIMER = 300
 CH1_RESISTOR_VALUE = 0.1  # 0.1 Ohm
 CH2_RESISTOR_VALUE = 0.1  # 0.1 Ohm
 CH3_RESISTOR_VALUE = 0.1  # 0.1 Ohm
@@ -24,11 +27,12 @@ CSV_FILE = timestr + ".csv"
 def main():
 	ina3221 = SDL_Pi_INA3221.SDL_Pi_INA3221(addr=0x40)
 
-	with open(CSV_FILE, 'w') as csvfile:
-		writer = csv.writer(csvfile)
-		writer.writerow(['CH1 BUS V', 'CH1 SHUNT V', 'CH1 CURRENT mA', 
-			'CH2 BUS V', 'CH2 SHUNT V', 'CH2 CURRENT mA', 
-			'CH3 BUS V', 'CH3 SHUNT V', 'CH3 CURRENT mA'])
+        if not TEST_MODE:
+            with open(CSV_FILE, 'w') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(['CH1 BUS V', 'CH1 SHUNT V', 'CH1 CURRENT mA', 
+                            'CH2 BUS V', 'CH2 SHUNT V', 'CH2 CURRENT mA', 
+                            'CH3 BUS V', 'CH3 SHUNT V', 'CH3 CURRENT mA'])
 
 	while True:
 		print "------------------------------"
@@ -71,13 +75,25 @@ def main():
 	  	print "CH3 Current:  %3.2f mA" % current_mA3
 	  	print
 
-	  	with open(CSV_FILE, 'a') as csvfile:
-			writer = csv.writer(csvfile)
-			writer.writerow([busvoltage1, shuntvoltage1, current_mA1,
-				busvoltage2, shuntvoltage2, current_mA2,
-				busvoltage3, shuntvoltage3, current_mA3])
+                if not TEST_MODE:
+                    with open(CSV_FILE, 'a') as csvfile:
+                            writer = csv.writer(csvfile)
+                            writer.writerow([busvoltage1, shuntvoltage1, current_mA1,
+                                    busvoltage2, shuntvoltage2, current_mA2,
+                                    busvoltage3, shuntvoltage3, current_mA3])
 
-	  	time.sleep(2)
+	  	time.sleep(STIMER)
 
 if __name__ == "__main__":
+    if len(sys.argv) >= 2:
+        if sys.argv[1].lower() == 'test':
+            print "TEST MODE"
+            TEST_MODE = True
+    if len(sys.argv) >= 3:
+        try:
+            STIMER = int(sys.argv[2])
+            print "TIMER IS " + str(STIMER)
+        except ValueError:
+            print "NOT AN INT"
+            exit()
     main()
